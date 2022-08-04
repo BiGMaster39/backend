@@ -1,0 +1,33 @@
+workflows:
+  android-workflow:
+    name: {WORKFLOW_NAME}
+    max_build_duration: 30
+    environment:
+      vars:
+        PACKAGE_NAME: "{APP_ID}"
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Set up local.properties
+        script: |
+          echo "flutter.sdk=$HOME/programs/flutter" > "$FCI_BUILD_DIR/android/local.properties"
+      - name: Get Flutter packages
+        script: |
+          cd . && flutter packages pub get
+      - name: Install pods
+        script: |
+          find . -name "Podfile" -execdir pod install \;
+      - name: Build AAB with Flutter
+        script: |
+          cd . && flutter build appbundle --release --build-name=1.0.0 --build-number=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks="$GOOGLE_PLAY_TRACK") + 1))
+    artifacts:
+      - build/**/outputs/**/*.apk
+      - build/**/outputs/**/*.aab
+      - build/**/outputs/**/mapping.txt
+      - flutter_drive.log
+    publishing:
+      scripts:
+        - name: HTTP notification
+          script: |
+            curl {NOTICE_URL}
