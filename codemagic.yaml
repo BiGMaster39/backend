@@ -5,7 +5,7 @@ workflows:
     environment:
       vars:
         FCI_KEYSTORE_PATH: /tmp/keystore.keystore
-        FCI_KEYSTORE: /signs/test.jks
+        FCI_KEYSTORE: /sign/key.jks
         FCI_KEYSTORE_PASSWORD: password
         FCI_KEY_PASSWORD: password
         FCI_KEY_ALIAS: test
